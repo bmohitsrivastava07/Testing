@@ -215,27 +215,27 @@ class PaymentServiceTest {
         assertNotNull(paymentIntent.getId());
     }
 
-    @Test
-    void stripePaymentTest_paymentInfoFound() throws Exception {
-        // Arrange
-        String userEmail = "test@example.com";
-        Payment paymentMock = mock(Payment.class);
-        when(paymentRepository.findByUserEmail(userEmail)).thenReturn(paymentMock);
+   @Test
+void stripePaymentTest_paymentInfoFound() throws Exception {
+    // Arrange
+    String userEmail = "test@example.com";
+    Payment paymentMock = mock(Payment.class);
+    when(paymentRepository.findByUserEmail(userEmail)).thenReturn(paymentMock);
 
-        // Mock the saving of payment
-        doNothing().when(paymentRepository).save(paymentMock);
+    // Mock the saving of payment and return the paymentMock
+    when(paymentRepository.save(paymentMock)).thenReturn(paymentMock);
 
-        // Act
-        ResponseEntity<String> response = paymentService.stripePayment(userEmail);
+    // Act
+    ResponseEntity<String> response = paymentService.stripePayment(userEmail);
 
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Payment done successfully", response.getBody());
-        verify(paymentMock, times(1)).setAmount(0.0);
-        verify(paymentRepository, times(1)).save(paymentMock);
-    }
-
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals("Payment done successfully", response.getBody());
+    verify(paymentMock, times(1)).setAmount(0.0);
+    verify(paymentRepository, times(1)).save(paymentMock);
+}
+ 
     @Test
     void stripePaymentTest_paymentInfoNotFound() {
         // Arrange
